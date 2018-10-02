@@ -121,6 +121,11 @@ public:
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
+    //20180929 add by song
+    //save map for demo
+    void saveMap(const string &filename);
+    void saveMapPointStatus(const string &filename);
+    //end
 private:
     // Save/Load functions
     void SaveMap(const string &filename);

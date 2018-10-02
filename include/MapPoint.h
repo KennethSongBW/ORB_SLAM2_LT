@@ -39,6 +39,11 @@ class Frame;
 
 class MapPoint
 {
+    //20180929 add by song
+    //create a type to save the status of the mappoint
+    enum memType {LONGTERM = 0, SHORTTERM = 1, REMOVED = 2};
+    //end
+
 public:
     MapPoint(const cv::Mat &Pos, KeyFrame* pRefKF, Map* pMap);
     MapPoint(const cv::Mat &Pos,  Map* pMap, Frame* pFrame, const int &idxF);
@@ -81,6 +86,48 @@ public:
     float GetMaxDistanceInvariance();
     int PredictScale(const float &currentDist, KeyFrame*pKF);
     int PredictScale(const float &currentDist, Frame* pF);
+
+    //20180929 add by song
+    //get the memory status of this map point
+    int getMemStatus()
+    {
+        if (memStatus == LONGTERM) return 0;
+        else if (memStatus == SHORTTERM) return 1;
+        else return 2;
+    }
+
+    //set the memory status of this map point
+    void setMemStaus(int i)
+    {
+        if (i == 0) memStatus = LONGTERM;
+        else if (i == 1) memStatus = SHORTTERM;
+        else memStatus = REMOVED;
+    }
+
+    //get the count of short memory
+    uint getCount() {return countOfShort;}
+
+    //adding one to count of short
+    void addCount();
+
+    //reset the count of short
+    void resetCount() {countOfShort = 0;}
+
+    //countdown the count of short
+    void countDown() {countOfShort = 7;}
+
+    //minus one from count of short
+    void minusCount();
+
+    //determine whether two map points are the same
+    bool isSame(MapPoint* pMP);
+
+    //add a visible record of this point
+    void addVisible(double mTimeStamp);
+
+    //get isVisible
+    vector<bool> getVisible() {return isVisible;}
+    //end
 
 public:
     // for serialization
@@ -155,6 +202,15 @@ protected:
 
      std::mutex mMutexPos;
      std::mutex mMutexFeatures;
+
+     //20180929 add by song
+     //Saving the memory status of the map point
+     memType memStatus;
+     //Saving the count of short memory
+     uint countOfShort;
+     vector<bool> isVisible;
+     double lastTime;
+     //end
 };
 
 } //namespace ORB_SLAM

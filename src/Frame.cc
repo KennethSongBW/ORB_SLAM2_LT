@@ -679,4 +679,30 @@ cv::Mat Frame::UnprojectStereo(const int &i)
         return cv::Mat();
 }
 
+//20180930 add by song
+void Frame::updateStatus()
+{
+    std::vector<MapPoint*> reference = mpReferenceKF->GetMapPointMatches();
+    //cout << "Start" << endl;
+    if (mvpMapPoints.size()!=0 && reference.size()!=0)
+    {
+        for (int i = 0; i < mvpMapPoints.size(); i++)
+        {
+            if (mvpMapPoints[i])
+            {
+                bool flag = false;
+                for (int j = 0;j < reference.size(); j++)
+                {
+                    if (reference[j])
+                    {
+                        if (mvpMapPoints[i]->isSame(reference[j])) {mvpMapPoints[i]->addCount(); flag = true; break;}
+                    }
+                }
+                if (!flag) {mvpMapPoints[i]->minusCount();}
+            }
+        }   
+    }
+}
+//end
+
 } //namespace ORB_SLAM

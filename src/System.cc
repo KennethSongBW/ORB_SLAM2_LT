@@ -561,4 +561,55 @@ bool System::LoadMap(const string &filename)
     return true;
 }
 
+//20180929 add by song
+void System::saveMap(const string &filename)
+{
+    //unique_lock<mutex> lock(mMutexState);
+    //cout << "SaveMap" << endl;
+
+    std::vector<MapPoint*> allMapPoints = mpMap->GetAllMapPoints();
+
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+    
+    for (size_t i=0; i < allMapPoints.size(); i++)
+    {
+        MapPoint* point = allMapPoints[i];
+        cv::Mat pos = point->GetWorldPos();
+        if (point->getMemStatus() == 0)
+        {
+            f << setprecision(6) << pos.at<float>(0,0) << " " << pos.at<float>(1,0) << " " << pos.at<float>(2,0) << endl;
+        }
+    }
+    f.close();
+    //cout << "Map Saved" << endl;
+}
+
+void System::saveMapPointStatus(const string &filename)
+{
+    //cout << "SaveMap" << endl;
+    std::vector<MapPoint*> allMapPoints = mpMap->GetAllMapPoints();
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+    
+    for (size_t i=0; i < allMapPoints.size(); i++)
+    {
+        MapPoint* point = allMapPoints[i];
+        if (point)
+        {
+            f << setprecision(6) << point->mnId << " ";
+            for (int j = 0; j < point->getVisible().size(); j++)
+            {
+                if (point->getVisible()[j]) f << 1 << " ";
+                else f << 0 << " ";
+            }
+            f << endl;
+        }
+    }
+    f.close();
+}
+//end
+
 } //namespace ORB_SLAM

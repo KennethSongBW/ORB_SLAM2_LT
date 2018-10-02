@@ -61,12 +61,17 @@ int main(int argc, char **argv)
     ImageGrabber igb(&SLAM);
 
     ros::NodeHandle nodeHandler;
-    ros::Subscriber sub = nodeHandler.subscribe("/camera/image_raw", 1, &ImageGrabber::GrabImage,&igb);
+    ros::Subscriber sub = nodeHandler.subscribe("/cam0/image_raw", 1, &ImageGrabber::GrabImage,&igb);
 
     ros::spin();
 
     // Stop all threads
     SLAM.Shutdown();
+
+    // 20180929 add by song
+    SLAM.saveMap("Map.txt");
+    SLAM.saveMapPointStatus("MapPointStatus.txt");
+    //end
 
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");

@@ -504,7 +504,9 @@ void Tracking::Track()
         mlFrameTimes.push_back(mlFrameTimes.back());
         mlbLost.push_back(mState==LOST);
     }
-
+    //20180929 add by song
+    mCurrentFrame.updateStatus();
+    //end
 }
 
 
