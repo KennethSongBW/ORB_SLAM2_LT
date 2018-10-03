@@ -125,6 +125,8 @@ public:
     //save map for demo
     void saveMap(const string &filename);
     void saveMapPointStatus(const string &filename);
+    //determine whether save date or use data
+    bool mode;
     //end
 private:
     // Save/Load functions
