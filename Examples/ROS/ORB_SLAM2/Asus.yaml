@@ -5,21 +5,21 @@
 #--------------------------------------------------------------------------------------------
 
 # Camera calibration and distortion parameters (OpenCV) 
-Camera.fx: 535.4
-Camera.fy: 539.2
-Camera.cx: 320.1
-Camera.cy: 247.6
+Camera.fx: 464.685464
+Camera.fy: 465.059797
+Camera.cx: 356.293826
+Camera.cy: 219.036290
 
-Camera.k1: 0.0
-Camera.k2: 0.0
-Camera.p1: 0.0
-Camera.p2: 0.0
+Camera.k1: -0.391355
+Camera.k2: 0.127457
+Camera.p1: 0.001202
+Camera.p2: -0.001595
 
 Camera.width: 640
 Camera.height: 480
 
 # Camera frames per second 
-Camera.fps: 30.0
+Camera.fps: 20.0
 
 # IR projector baseline times fx (aprox.)
 Camera.bf: 40.0
@@ -67,3 +67,7 @@ Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
 
+#--------------------------------------------------------------------------------------------
+# Map Parapeters
+#--------------------------------------------------------------------------------------------
+Map.mapfile: map.bin

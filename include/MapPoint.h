@@ -127,6 +127,8 @@ public:
 
     //get isVisible
     vector<bool> getVisible() {return isVisible;}
+
+    bool getPrediction() {return predictStatus;}
     //end
 
 public:
@@ -210,6 +212,7 @@ protected:
      uint countOfShort;
      vector<bool> isVisible;
      double lastTime;
+     bool predictStatus;
      //end
 };
 

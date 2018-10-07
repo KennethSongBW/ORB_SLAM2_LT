@@ -130,6 +130,16 @@ void Map::clear()
     mvpKeyFrameOrigins.clear();
 }
 
+//20181006 add by song
+void Map::mapUpdate()
+{
+    for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
+    {
+        int m = (*sit)->getMemStatus();
+        if ((m == 1 && !(*sit)->getPrediction()) || m == 2) EraseMapPoint((*sit));
+    }
+}
+
 template<class Archive>
 void Map::serialize(Archive &ar, const unsigned int version)
 {

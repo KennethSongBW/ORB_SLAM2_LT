@@ -67,6 +67,10 @@ public:
     // This avoid that two points are created simultaneously in separate threads (id conflict)
     std::mutex mMutexPointCreation;
 
+    //20181006 add by song
+    void mapUpdate();
+    //end
+
 
 private:
     // serialize is recommended to be private
