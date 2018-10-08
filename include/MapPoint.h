@@ -213,6 +213,7 @@ protected:
      vector<bool> isVisible;
      double lastTime;
      bool predictStatus;
+     bool isChanged;
      //end
 };
 

@@ -36,8 +36,8 @@ namespace ORB_SLAM2
 {
 
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
-               const bool bUseViewer, bool is_save_map_):mSensor(sensor), is_save_map(is_save_map_), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),
-        mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false)
+               const bool bUseViewer, bool is_save_map_, double time):mSensor(sensor), is_save_map(is_save_map_), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),
+        mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false), startTime(time)
 {
     // Output welcome message
     cout << endl <<
@@ -89,7 +89,6 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     }
     cout << "Vocabulary loaded!" << endl << endl;
 
-
     //Create KeyFrame Database
     //Create the Map
     if (!mapfile.empty() && LoadMap(mapfile))
@@ -100,6 +99,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     {
         mpKeyFrameDatabase = new KeyFrameDatabase(mpVocabulary);
         mpMap = new Map();
+        mpMap->setStartTime(startTime);
     }
 
     //Create Drawers. These are used by the Viewer
@@ -577,10 +577,11 @@ void System::saveMap(const string &filename)
     {
         MapPoint* point = allMapPoints[i];
         cv::Mat pos = point->GetWorldPos();
-        if (point->getMemStatus() == 0)
-        {
-            f << setprecision(6) << pos.at<float>(0,0) << " " << pos.at<float>(1,0) << " " << pos.at<float>(2,0) << endl;
-        }
+        //if (point->getMemStatus() == 0)
+        //{
+        f << setprecision(6) << pos.at<float>(0,0) << " " << pos.at<float>(1,0) << " " << pos.at<float>(2,0) << " " 
+            << point->getMemStatus() << endl;
+        //}
     }
     f.close();
     //cout << "Map Saved" << endl;

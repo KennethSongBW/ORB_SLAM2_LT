@@ -23,6 +23,7 @@
 
 #include "MapPoint.h"
 #include "KeyFrame.h"
+
 #include <set>
 
 #include <mutex>
@@ -69,6 +70,8 @@ public:
 
     //20181006 add by song
     void mapUpdate();
+    void setStartTime(double time) {startTime = time;}
+    double getStartTime() {return startTime;}
     //end
 
 
@@ -90,6 +93,10 @@ protected:
     int mnBigChangeIdx;
 
     std::mutex mMutexMap;
+
+    //20181008 add by song
+    double startTime;
+    //end
 };
 
 } //namespace ORB_SLAM

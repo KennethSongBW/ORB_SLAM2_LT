@@ -63,7 +63,7 @@ public:
 public:
 
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
-    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true, bool is_save_map_=false);
+    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true, bool is_save_map_=false, double time = 0);
 
     // Proccess the given stereo frame. Images must be synchronized and rectified.
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
@@ -127,6 +127,8 @@ public:
     void saveMapPointStatus(const string &filename);
     //determine whether save date or use data
     bool mode;
+    void setStartTime(double time) {startTime = time;}
+    double getStartTime() {return startTime;}
     //end
 private:
     // Save/Load functions
@@ -188,6 +190,10 @@ private:
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
     std::mutex mMutexState;
+
+    //20181008 add by song
+    double startTime;
+    //end
 };
 
 }// namespace ORB_SLAM

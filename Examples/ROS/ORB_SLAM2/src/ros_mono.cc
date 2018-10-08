@@ -56,12 +56,13 @@ int main(int argc, char **argv)
     }    
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
+    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true,false,ros::Time::now().toSec());
+    //SLAM.setStartTime(ros::Time::now().toSec());
 
     ImageGrabber igb(&SLAM);
 
     ros::NodeHandle nodeHandler;
-    ros::Subscriber sub = nodeHandler.subscribe("/cam0/image_raw", 1, &ImageGrabber::GrabImage,&igb);
+    ros::Subscriber sub = nodeHandler.subscribe("/cam1/image_raw", 1, &ImageGrabber::GrabImage,&igb);
 
     ros::spin();
 

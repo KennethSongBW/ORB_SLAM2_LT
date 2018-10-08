@@ -44,6 +44,7 @@ MapPoint::MapPoint(const cv::Mat &Pos, KeyFrame *pRefKF, Map* pMap):
     //20181002 add by song
     memStatus = LONGTERM;
     lastTime = pRefKF->mTimeStamp;
+    isChanged = false;
     //end
 }
 
@@ -75,6 +76,7 @@ MapPoint::MapPoint(const cv::Mat &Pos, Map* pMap, Frame* pFrame, const int &idxF
     //20181002 add by song
     memStatus = LONGTERM;
     lastTime = pFrame->mTimeStamp;
+    isChanged = false;
     //end
 }
 
@@ -117,12 +119,26 @@ void MapPoint::AddObservation(KeyFrame* pKF, size_t idx)
     
 
     //20181002 add by song
-    if (pKF->mTimeStamp - lastTime >= 1.0 && pKF->mTimeStamp - lastTime < 2.0) isVisible.push_back(true);
+    if (!isChanged)
+    {
+        isChanged = true;
+        double t = mpMap->getStartTime();
+        for (int i = 0; i < pKF->mTimeStamp - t; i++) isVisible.push_back(false);
+        isVisible.push_back(true);
+        lastTime = pKF->mTimeStamp;
+    }
+    else if (pKF->mTimeStamp - lastTime >= 1.0 && pKF->mTimeStamp - lastTime < 2.0) 
+    {
+        isVisible.push_back(true);
+        lastTime = pKF->mTimeStamp;
+    }
     else if (pKF->mTimeStamp - lastTime > 2.0)
     {
         for (int i = 0; i < pKF->mTimeStamp - lastTime -1; i++) isVisible.push_back(false);
         isVisible.push_back(true);
+        lastTime = pKF->mTimeStamp;
     }
+    
     //end
 }
 

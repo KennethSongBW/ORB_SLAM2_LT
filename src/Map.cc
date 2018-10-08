@@ -139,6 +139,7 @@ void Map::mapUpdate()
         if ((m == 1 && !(*sit)->getPrediction()) || m == 2) EraseMapPoint((*sit));
     }
 }
+//end
 
 template<class Archive>
 void Map::serialize(Archive &ar, const unsigned int version)
