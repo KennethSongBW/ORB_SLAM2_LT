@@ -37,6 +37,9 @@ namespace ORB_SLAM2
 #define FRAME_GRID_ROWS 48
 #define FRAME_GRID_COLS 64
 
+const int TH_HIGH = 100;
+const int TH_LOW = 50;
+
 class MapPoint;
 class KeyFrame;
 
@@ -100,6 +103,7 @@ public:
 
     //20180929 add by song
     void updateStatus();
+    float computeLocalizability();
     //end
 
 public:

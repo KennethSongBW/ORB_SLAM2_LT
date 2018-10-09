@@ -703,6 +703,88 @@ void Frame::updateStatus()
         }   
     }
 }
+
+float Frame::computeLocalizability()
+{
+    int nmatches = 0;
+    float sigma = 0.0;
+    float th = 3.0;
+    const bool bFactor = th!=1.0;
+    ORBmatcher match;
+    for(size_t iMP=0; iMP<mvpMapPoints.size(); iMP++)
+    {
+        MapPoint* pMP = mvpMapPoints[iMP];
+        if(!pMP->mbTrackInView)
+            continue;
+
+        if(pMP->isBad())
+            continue;
+
+        const int &nPredictedLevel = pMP->mnTrackScaleLevel;
+        float r = match.RadiusByViewingCos(pMP->mTrackViewCos);
+
+        if(bFactor) r*=th;
+
+        const vector<size_t> vIndices =
+                GetFeaturesInArea(pMP->mTrackProjX,pMP->mTrackProjY,r*mvScaleFactors[nPredictedLevel],nPredictedLevel-1,nPredictedLevel);
+        
+        if(vIndices.empty()) continue;
+
+        const cv::Mat MPdescriptor = pMP->GetDescriptor();
+
+        int bestDist=256;
+        int bestLevel= -1;
+        int bestDist2=256;
+        int bestLevel2 = -1;
+        int bestIdx =-1 ;
+
+        for(vector<size_t>::const_iterator vit=vIndices.begin(), vend=vIndices.end(); vit!=vend; vit++)
+        {
+            const size_t idx = *vit;
+
+            if(mvpMapPoints[idx])
+                if(mvpMapPoints[idx]->Observations()>0)
+                    continue;
+            
+            if(mvuRight[idx]>0)
+            {
+                const float er = fabs(pMP->mTrackProjXR-mvuRight[idx]);
+                if(er>r*mvScaleFactors[nPredictedLevel])
+                    continue;
+            }
+
+            const cv::Mat &d = mDescriptors.row(idx);
+
+            const int dist = match.DescriptorDistance(MPdescriptor,d);
+
+            if(dist<bestDist)
+            {
+                bestDist2=bestDist;
+                bestDist=dist;
+                bestLevel2 = bestLevel;
+                bestLevel = mvKeysUn[idx].octave;
+                bestIdx=idx;
+            }
+            else if(dist<bestDist2)
+            {
+                bestLevel2 = mvKeysUn[idx].octave;
+                bestDist2=dist;
+            }
+        }
+
+        if(bestDist<=TH_HIGH)
+        {
+            if(bestLevel==bestLevel2 && bestDist>0.6*bestDist2)
+                continue;
+
+            mvpMapPoints[bestIdx]=pMP;
+            nmatches++;
+            sigma+= bestDist;
+        }
+    }
+    float localizability = sigma * mvpMapPoints.size() / nmatches / nmatches / TH_HIGH;
+    return localizability;
+}
 //end
 
 } //namespace ORB_SLAM

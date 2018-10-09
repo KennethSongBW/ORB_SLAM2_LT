@@ -82,6 +82,8 @@ public:
     // Project MapPoints into KeyFrame using a given Sim3 and search for duplicated MapPoints.
     int Fuse(KeyFrame* pKF, cv::Mat Scw, const std::vector<MapPoint*> &vpPoints, float th, vector<MapPoint *> &vpReplacePoint);
 
+    float RadiusByViewingCos(const float &viewCos);
+
 public:
 
     static const int TH_LOW;
@@ -93,7 +95,7 @@ protected:
 
     bool CheckDistEpipolarLine(const cv::KeyPoint &kp1, const cv::KeyPoint &kp2, const cv::Mat &F12, const KeyFrame *pKF);
 
-    float RadiusByViewingCos(const float &viewCos);
+    //float RadiusByViewingCos(const float &viewCos);
 
     void ComputeThreeMaxima(std::vector<int>* histo, const int L, int &ind1, int &ind2, int &ind3);
 
