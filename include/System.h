@@ -193,6 +193,7 @@ private:
 
     //20181008 add by song
     double startTime;
+    double finishTime;
     //end
 };
 

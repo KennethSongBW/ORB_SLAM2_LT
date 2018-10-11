@@ -325,6 +325,7 @@ void System::Reset()
 
 void System::Shutdown()
 {
+    finishTime = mpTracker->mCurrentFrame.mTimeStamp;
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
     if(mpViewer)
@@ -606,6 +607,7 @@ void System::saveMapPointStatus(const string &filename)
                 if (point->getVisible()[j]) f << 1 << " ";
                 else f << 0 << " ";
             }
+            for (int j = 0; j < finishTime - point->getLastTime() -1; j++) f << 0 << " ";
             f << endl;
         }
     }

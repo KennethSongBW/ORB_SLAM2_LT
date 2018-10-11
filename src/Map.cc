@@ -133,10 +133,30 @@ void Map::clear()
 //20181006 add by song
 void Map::mapUpdate()
 {
+    if (para_P.size() != p+1 || para_Q.size() != q+1) return;
     for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
     {
         int m = (*sit)->getMemStatus();
-        if ((m == 1 && !(*sit)->getPrediction()) || m == 2) EraseMapPoint((*sit));
+        if (m == 2) EraseMapPoint((*sit));
+        //toadd: check the lasttime of the mappoint
+        if (m == 1)
+        {
+            vector<bool> history = (*sit)->getVisible();
+            int count = history.size();
+            float current = para_P[p] + para_Q[q];
+            for (int i = 0; i < p; i++) current+= int(history[count-i-1]) * para_P[i];
+            for (int i = 0; i < q; i++) current+= int(history[count-i-1]) * para_Q[i];
+            if (current >= 0.5) 
+            {
+                (*sit)->setPrediction(true); 
+                AddMapPoint(*sit);
+            }
+            else 
+            {
+                (*sit)->setPrediction(false);
+                EraseMapPoint(*sit);
+            }
+        }
     }
 }
 //end

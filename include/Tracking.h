@@ -76,6 +76,9 @@ public:
     void InformOnlyTracking(const bool &flag);
 
     //20181003 add by song
+    //bool parameter for two modes
+    //true for collecting map information
+    //false for tracking using predicted map
     bool mode;
     //end
 public:

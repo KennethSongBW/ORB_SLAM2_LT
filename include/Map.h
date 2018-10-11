@@ -96,6 +96,9 @@ protected:
 
     //20181008 add by song
     double startTime;
+    int p,q;
+    std::vector<float> para_P;
+    std::vector<float> para_Q;
     //end
 };
 

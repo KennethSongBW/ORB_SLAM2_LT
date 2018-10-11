@@ -129,6 +129,8 @@ public:
     vector<bool> getVisible() {return isVisible;}
 
     bool getPrediction() {return predictStatus;}
+    void setPrediction(bool status) {predictStatus = status;}
+    double getLastTime() {return lastTime;}
     //end
 
 public:
