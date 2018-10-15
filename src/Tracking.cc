@@ -505,8 +505,13 @@ void Tracking::Track()
         mlbLost.push_back(mState==LOST);
     }
     //20180929 add by song
+    mpMap->regularUpdate(mCurrentFrame.mTimeStamp);
     if (mode) mCurrentFrame.updateStatus();
-    else mpMap->mapUpdate();
+    else 
+    {
+        cout << mCurrentFrame.computeLocalizability();
+        mpMap->mapUpdate();
+    }
     //end
 }
 

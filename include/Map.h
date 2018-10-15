@@ -72,6 +72,8 @@ public:
     void mapUpdate();
     void setStartTime(double time) {startTime = time;}
     double getStartTime() {return startTime;}
+    //void setCurrentTime(double t) {currentTime = t;}
+    void regularUpdate(double t);
     //end
 
 
@@ -96,9 +98,9 @@ protected:
 
     //20181008 add by song
     double startTime;
-    int p,q;
-    std::vector<float> para_P;
-    std::vector<float> para_Q;
+    //double currentTime;
+    double lastTime;
+    unsigned long count;
     //end
 };
 

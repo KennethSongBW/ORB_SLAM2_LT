@@ -32,7 +32,7 @@ make -j4
 
 cd ..
 
-cd Vocabulary
-echo "Converting vocabulary to binary version"
-./bin_vocabulary
-cd ..
+#cd Vocabulary
+#echo "Converting vocabulary to binary version"
+#./bin_vocabulary
+#cd ..

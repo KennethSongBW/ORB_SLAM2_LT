@@ -27,6 +27,8 @@ namespace ORB_SLAM2
 
 Map::Map():mnMaxKFid(0),mnBigChangeIdx(0)
 {
+    count = 0;
+    lastTime = 0.0;
 }
 
 void Map::AddKeyFrame(KeyFrame *pKF)
@@ -133,7 +135,7 @@ void Map::clear()
 //20181006 add by song
 void Map::mapUpdate()
 {
-    if (para_P.size() != p+1 || para_Q.size() != q+1) return;
+    // if (para_P.size() != p+1 || para_Q.size() != q+1) return;
     for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
     {
         int m = (*sit)->getMemStatus();
@@ -143,6 +145,10 @@ void Map::mapUpdate()
         {
             vector<bool> history = (*sit)->getVisible();
             int count = history.size();
+            std::vector<float> para_P = (*sit)->getPara_P();
+            std::vector<float> para_Q = (*sit)->getPara_Q();
+            int p = (*sit)->getP();
+            int q = (*sit)->getQ();
             float current = para_P[p] + para_Q[q];
             for (int i = 0; i < p; i++) current+= int(history[count-i-1]) * para_P[i];
             for (int i = 0; i < q; i++) current+= int(history[count-i-1]) * para_Q[i];
@@ -156,6 +162,31 @@ void Map::mapUpdate()
                 (*sit)->setPrediction(false);
                 EraseMapPoint(*sit);
             }
+        }
+    }
+}
+
+void Map::regularUpdate(double t)
+{
+    if (lastTime == 0)
+    {
+        for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
+        {
+            if (!(*sit)) break;
+            vector<bool> status = (*sit)->getVisible();
+            if (status.size() != 0) return;
+            (*sit)->addVisible(1);
+            lastTime = t;
+        }
+    }
+    else
+    {
+        for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
+        {
+            if (!(*sit)) break;
+            if (t - lastTime <= 1.0) return;
+            if (t - (*sit)->getLastTime() >= 1.0) (*sit)->addVisible(0);
+            else (*sit)->addVisible(1);
         }
     }
 }

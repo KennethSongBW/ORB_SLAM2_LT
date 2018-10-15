@@ -119,26 +119,26 @@ void MapPoint::AddObservation(KeyFrame* pKF, size_t idx)
     
 
     //20181002 add by song
-    if (!isChanged)
-    {
-        isChanged = true;
-        double t = mpMap->getStartTime();
-        for (int i = 0; i < pKF->mTimeStamp - t; i++) isVisible.push_back(false);
-        isVisible.push_back(true);
-        lastTime = pKF->mTimeStamp;
-    }
-    else if (pKF->mTimeStamp - lastTime >= 1.0 && pKF->mTimeStamp - lastTime < 2.0) 
-    {
-        isVisible.push_back(true);
-        lastTime = pKF->mTimeStamp;
-    }
-    else if (pKF->mTimeStamp - lastTime > 2.0)
-    {
-        for (int i = 0; i < pKF->mTimeStamp - lastTime -1; i++) isVisible.push_back(false);
-        isVisible.push_back(true);
-        lastTime = pKF->mTimeStamp;
-    }
-    
+    // if (!isChanged)
+    // {
+    //     isChanged = true;
+    //     double t = mpMap->getStartTime();
+    //     for (int i = 0; i < pKF->mTimeStamp - t; i++) isVisible.push_back(false);
+    //     isVisible.push_back(true);
+    //     lastTime = pKF->mTimeStamp;
+    // }
+    // else if (pKF->mTimeStamp - lastTime >= 1.0 && pKF->mTimeStamp - lastTime < 2.0) 
+    // {
+    //     isVisible.push_back(true);
+    //     lastTime = pKF->mTimeStamp;
+    // }
+    // else if (pKF->mTimeStamp - lastTime > 2.0)
+    // {
+    //     for (int i = 0; i < pKF->mTimeStamp - lastTime -1; i++) isVisible.push_back(false);
+    //     isVisible.push_back(true);
+    //     lastTime = pKF->mTimeStamp;
+    // }
+    lastTime = pKF->mTimeStamp;
     //end
 }
 

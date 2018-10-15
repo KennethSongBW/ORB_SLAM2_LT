@@ -123,7 +123,7 @@ public:
     bool isSame(MapPoint* pMP);
 
     //add a visible record of this point
-    void addVisible(double mTimeStamp);
+    void addVisible(bool s) {isVisible.push_back(s);}
 
     //get isVisible
     vector<bool> getVisible() {return isVisible;}
@@ -131,6 +131,26 @@ public:
     bool getPrediction() {return predictStatus;}
     void setPrediction(bool status) {predictStatus = status;}
     double getLastTime() {return lastTime;}
+
+    int getP() {return p;}
+    int getQ() {return q;}
+    std::vector<float> getPara_P() {return para_P;}
+    std::vector<float> getPara_Q() {return para_Q;}
+
+    void setP(int a) {p = a;}
+    void setQ(int a) {q = a;}
+    bool setPara_P(std::vector<float> a)
+    {
+        if (a.size() == p+1) para_P = a;
+        else return false;
+        return true;
+    }
+    bool setPara_Q(std::vector<float> a)
+    {
+        if (a.size() == q+1) para_Q = a;
+        else return false;
+        return true;
+    }
     //end
 
 public:
@@ -212,10 +232,16 @@ protected:
      memType memStatus;
      //Saving the count of short memory
      uint countOfShort;
+
      vector<bool> isVisible;
      double lastTime;
      bool predictStatus;
      bool isChanged;
+
+     int p,q;
+     std::vector<float> para_P;
+     std::vector<float> para_Q;
+     std::vector<float> noise;
      //end
 };
 
