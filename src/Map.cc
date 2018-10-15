@@ -170,23 +170,34 @@ void Map::regularUpdate(double t)
 {
     if (lastTime == 0)
     {
+        if (count != 0) {cout << "Error" << endl; return;}
         for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
         {
             if (!(*sit)) break;
             vector<bool> status = (*sit)->getVisible();
-            if (status.size() != 0) return;
+            if (status.size() != 0) {cout << "Error" << endl; return;}
             (*sit)->addVisible(1);
             lastTime = t;
+            count += 1;
         }
     }
     else
     {
+        if (t - lastTime <= 1.0) return;
+        cout << "Update!" << endl;
         for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
         {
             if (!(*sit)) break;
-            if (t - lastTime <= 1.0) return;
-            if (t - (*sit)->getLastTime() >= 1.0) (*sit)->addVisible(0);
-            else (*sit)->addVisible(1);
+            if ((*sit)->getVisible().empty())
+            {
+                for (int i = 0; i < count; i++) (*sit)->addVisible(false);
+                (*sit)->addVisible(true);
+                //cout << "add new" << endl;
+            }
+            else if (t - (*sit)->getLastTime() >= 1.0) (*sit)->addVisible(false);
+            else (*sit)->addVisible(true);
+            count += 1;
+            lastTime = t;
         }
     }
 }

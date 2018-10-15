@@ -45,6 +45,7 @@ MapPoint::MapPoint(const cv::Mat &Pos, KeyFrame *pRefKF, Map* pMap):
     memStatus = LONGTERM;
     lastTime = pRefKF->mTimeStamp;
     isChanged = false;
+    isVisible.clear();
     //end
 }
 
@@ -77,6 +78,7 @@ MapPoint::MapPoint(const cv::Mat &Pos, Map* pMap, Frame* pFrame, const int &idxF
     memStatus = LONGTERM;
     lastTime = pFrame->mTimeStamp;
     isChanged = false;
+    isVisible.clear();
     //end
 }
 

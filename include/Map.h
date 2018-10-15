@@ -70,8 +70,8 @@ public:
 
     //20181006 add by song
     void mapUpdate();
-    void setStartTime(double time) {startTime = time;}
-    double getStartTime() {return startTime;}
+    //void setStartTime(double time) {startTime = time;}
+    //double getStartTime() {return startTime;}
     //void setCurrentTime(double t) {currentTime = t;}
     void regularUpdate(double t);
     //end
@@ -97,7 +97,7 @@ protected:
     std::mutex mMutexMap;
 
     //20181008 add by song
-    double startTime;
+    //double startTime;
     //double currentTime;
     double lastTime;
     unsigned long count;

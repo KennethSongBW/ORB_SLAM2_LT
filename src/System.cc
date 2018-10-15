@@ -99,7 +99,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     {
         mpKeyFrameDatabase = new KeyFrameDatabase(mpVocabulary);
         mpMap = new Map();
-        mpMap->setStartTime(startTime);
+        //mpMap->setStartTime(startTime);
     }
 
     //Create Drawers. These are used by the Viewer
