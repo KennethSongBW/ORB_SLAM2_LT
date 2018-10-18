@@ -86,27 +86,27 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     mMinFrames = 0;
     mMaxFrames = fps;
 
-    cout << endl << "Camera Parameters: " << endl;
-    cout << "- fx: " << fx << endl;
-    cout << "- fy: " << fy << endl;
-    cout << "- cx: " << cx << endl;
-    cout << "- cy: " << cy << endl;
-    cout << "- k1: " << DistCoef.at<float>(0) << endl;
-    cout << "- k2: " << DistCoef.at<float>(1) << endl;
-    if(DistCoef.rows==5)
-        cout << "- k3: " << DistCoef.at<float>(4) << endl;
-    cout << "- p1: " << DistCoef.at<float>(2) << endl;
-    cout << "- p2: " << DistCoef.at<float>(3) << endl;
-    cout << "- fps: " << fps << endl;
+    // cout << endl << "Camera Parameters: " << endl;
+    // cout << "- fx: " << fx << endl;
+    // cout << "- fy: " << fy << endl;
+    // cout << "- cx: " << cx << endl;
+    // cout << "- cy: " << cy << endl;
+    // cout << "- k1: " << DistCoef.at<float>(0) << endl;
+    // cout << "- k2: " << DistCoef.at<float>(1) << endl;
+    // if(DistCoef.rows==5)
+    //     cout << "- k3: " << DistCoef.at<float>(4) << endl;
+    // cout << "- p1: " << DistCoef.at<float>(2) << endl;
+    // cout << "- p2: " << DistCoef.at<float>(3) << endl;
+    // cout << "- fps: " << fps << endl;
 
 
     int nRGB = fSettings["Camera.RGB"];
     mbRGB = nRGB;
 
-    if(mbRGB)
-        cout << "- color order: RGB (ignored if grayscale)" << endl;
-    else
-        cout << "- color order: BGR (ignored if grayscale)" << endl;
+    // if(mbRGB)
+    //     cout << "- color order: RGB (ignored if grayscale)" << endl;
+    // else
+    //     cout << "- color order: BGR (ignored if grayscale)" << endl;
 
     // Load ORB parameters
 
@@ -124,12 +124,12 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     if(sensor==System::MONOCULAR)
         mpIniORBextractor = new ORBextractor(2*nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
 
-    cout << endl  << "ORB Extractor Parameters: " << endl;
-    cout << "- Number of Features: " << nFeatures << endl;
-    cout << "- Scale Levels: " << nLevels << endl;
-    cout << "- Scale Factor: " << fScaleFactor << endl;
-    cout << "- Initial Fast Threshold: " << fIniThFAST << endl;
-    cout << "- Minimum Fast Threshold: " << fMinThFAST << endl;
+    // cout << endl  << "ORB Extractor Parameters: " << endl;
+    // cout << "- Number of Features: " << nFeatures << endl;
+    // cout << "- Scale Levels: " << nLevels << endl;
+    // cout << "- Scale Factor: " << fScaleFactor << endl;
+    // cout << "- Initial Fast Threshold: " << fIniThFAST << endl;
+    // cout << "- Minimum Fast Threshold: " << fMinThFAST << endl;
 
     if(sensor==System::STEREO || sensor==System::RGBD)
     {

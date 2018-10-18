@@ -40,20 +40,23 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false), startTime(time)
 {
     // Output welcome message
-    cout << endl <<
-    "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << endl <<
-    "This program comes with ABSOLUTELY NO WARRANTY;" << endl  <<
-    "This is free software, and you are welcome to redistribute it" << endl <<
-    "under certain conditions. See LICENSE.txt." << endl << endl;
+    // cout << endl <<
+    // "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << endl <<
+    // "This program comes with ABSOLUTELY NO WARRANTY;" << endl  <<
+    // "This is free software, and you are welcome to redistribute it" << endl <<
+    // "under certain conditions. See LICENSE.txt." << endl << endl;
 
-    cout << "Input sensor was set to: ";
+    // cout << "Input sensor was set to: ";
 
-    if(mSensor==MONOCULAR)
-        cout << "Monocular" << endl;
-    else if(mSensor==STEREO)
-        cout << "Stereo" << endl;
-    else if(mSensor==RGBD)
-        cout << "RGB-D" << endl;
+    // if(mSensor==MONOCULAR)
+    //     cout << "Monocular" << endl;
+    // else if(mSensor==STEREO)
+    //     cout << "Stereo" << endl;
+    // else if(mSensor==RGBD)
+    //     cout << "RGB-D" << endl;
+    cout << "Based on ORB_SLAM2" << endl;
+    cout << "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << endl;
+    cout << "Modified by SJTU" << endl;
 
     //Check settings file
     cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
@@ -71,7 +74,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     }
 
     //Load ORB Vocabulary
-    cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
+    // cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
     mpVocabulary = new ORBVocabulary();
     bool bVocLoad = false; // chose loading method based on file extension
@@ -87,7 +90,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cerr << "Falied to open at: " << strVocFile << endl;
         exit(-1);
     }
-    cout << "Vocabulary loaded!" << endl << endl;
+    // cout << "Vocabulary loaded!" << endl << endl;
 
     //Create KeyFrame Database
     //Create the Map
@@ -657,7 +660,6 @@ void System::readInPara(const string &filename)
             }
         }
     }
-
 }
 //end
 
