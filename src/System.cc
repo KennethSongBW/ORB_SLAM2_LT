@@ -94,6 +94,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     if (!mapfile.empty() && LoadMap(mapfile))
     {
         bReuseMap = true;
+        readInPara("para.txt");
     }
     else
     {
@@ -580,8 +581,9 @@ void System::saveMap(const string &filename)
         cv::Mat pos = point->GetWorldPos();
         //if (point->getMemStatus() == 0)
         //{
-        f << setprecision(6) << pos.at<float>(0,0) << " " << pos.at<float>(1,0) << " " << pos.at<float>(2,0) << " " 
-            << point->getMemStatus() << endl;
+        // f << setprecision(6) << pos.at<float>(0,0) << " " << pos.at<float>(1,0) << " " << pos.at<float>(2,0) << " " 
+        //     << point->getMemStatus() << endl;
+        f << setprecision(6) << pos.at<float>(0,0) << " " << pos.at<float>(1,0) << " " << pos.at<float>(2,0) << endl;
         //}
     }
     f.close();
@@ -612,6 +614,50 @@ void System::saveMapPointStatus(const string &filename)
         }
     }
     f.close();
+}
+
+void System::readInPara(const string &filename)
+{
+    std::ifstream in(filename, std::ios_base::binary);
+    if (!in)
+    {
+        cerr << "Cannot Open Parafile: " << mapfile << " , You need create it first!" << std::endl;
+        return ;
+    }
+    string s;
+    while(getline(in, s))
+    {
+        istringstream iss(s);
+        unsigned long num;
+        int sp, sq;
+        iss >> num >> sp >> sq;
+        std::vector<float> ap;
+        std::vector<float> aq;
+        for (int i = 0; i < sp + 1; i++) 
+        {
+            float a ;
+            iss >> a;
+            ap.push_back(a);
+        }
+        for (int i = 0; i < sq + 1; i++) 
+        {
+            float a ;
+            iss >> a;
+            aq.push_back(a);
+        }
+        std::vector<MapPoint*> map = mpMap->GetAllMapPoints();
+        for (int i = 0; i < map.size(); i++)
+        {
+            if (map[i]->mnId = num) 
+            {
+                map[i]->setP(sp);
+                map[i]->setQ(sq);
+                map[i]->setPara_P(ap);
+                map[i]->setPara_Q(aq);
+            }
+        }
+    }
+
 }
 //end
 

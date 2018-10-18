@@ -125,6 +125,7 @@ public:
     //save map for demo
     void saveMap(const string &filename);
     void saveMapPointStatus(const string &filename);
+    void readInPara(const string &filename);
     //determine whether save date or use data
     bool mode;
     void setStartTime(double time) {startTime = time;}
