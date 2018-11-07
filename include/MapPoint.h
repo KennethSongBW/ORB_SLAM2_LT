@@ -165,6 +165,8 @@ public:
 
     //set parameters
     void setPara(std::vector<float> para);
+
+    int getP() {return p;}
     //end
 
 public:

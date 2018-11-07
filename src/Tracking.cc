@@ -484,6 +484,11 @@ void Tracking::Track()
             mCurrentFrame.mpReferenceKF = mpReferenceKF;
 
         mLastFrame = Frame(mCurrentFrame);
+
+        //20181107 song
+        mCurrentFrame.updateStatus();
+        mpMap->MapStatusUpdate(mCurrentFrame.mTimeStamp);
+        //end
     }
 
     // Store frame pose information to retrieve the complete camera trajectory afterwards.

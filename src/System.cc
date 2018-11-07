@@ -345,6 +345,7 @@ void System::Shutdown()
         pangolin::BindToContext("ORB-SLAM2: Map Viewer");
     if (is_save_map)
         SaveMap(mapfile);
+    saveMapPointStatus("MapPointStatus.txt");
 }
 
 void System::SaveTrajectoryTUM(const string &filename)
