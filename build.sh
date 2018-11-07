@@ -23,9 +23,9 @@
 #tar -xf ORBvoc.txt.tar.gz
 #cd ..
 
-echo "Configuring and building ORB_SLAM2 ..."
+#echo "Configuring and building ORB_SLAM2 ..."
 
-#mkdir build
+mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j4

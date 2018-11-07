@@ -679,32 +679,25 @@ cv::Mat Frame::UnprojectStereo(const int &i)
         return cv::Mat();
 }
 
-//20180930 add by song
+//20181107 song
 void Frame::updateStatus()
 {
     std::vector<MapPoint*> reference = mpReferenceKF->GetMapPointMatches();
-    //cout << "Start" << endl;
-    if (mvpMapPoints.size()!=0 && reference.size()!=0)
+    if (mvpMapPoints.size() == 0 || reference.size() == 0) return;
+    for (int i = 0; i < mvpMapPoints.size(); i++)
     {
-        for (int i = 0; i < mvpMapPoints.size(); i++)
+        if (!mvpMapPoints[i]) break;
+        bool flag = false;
+        for (int j = 0;j < reference.size(); j++)
         {
-            if (mvpMapPoints[i])
-            {
-                bool flag = false;
-                for (int j = 0;j < reference.size(); j++)
-                {
-                    if (reference[j])
-                    {
-                        if (mvpMapPoints[i]->isSame(reference[j])) {mvpMapPoints[i]->addCount(); flag = true; break;}
-                    }
-                }
-                if (!flag) {mvpMapPoints[i]->minusCount();}
-            }
-        }   
+            if (!reference[j]) break;
+            if (mvpMapPoints[i]->isSame(reference[j])) {mvpMapPoints[i]->addCount(); flag = true; break;}
+        }
+        if (!flag) {mvpMapPoints[i]->minusCount();}
     }
 }
 
-float Frame::computeLocalizability()
+float Frame::computeMatchingRate()
 {
     int nmatches = 0;
     float sigma = 0.0;
@@ -772,7 +765,7 @@ float Frame::computeLocalizability()
             }
         }
 
-        if(bestDist<=TH_HIGH)
+        if(bestDist<=ORBmatcher::TH_HIGH)
         {
             if(bestLevel==bestLevel2 && bestDist>0.6*bestDist2)
                 continue;
@@ -782,7 +775,7 @@ float Frame::computeLocalizability()
             sigma+= bestDist;
         }
     }
-    float localizability = sigma * mvpMapPoints.size() / nmatches / nmatches / TH_HIGH;
+    float localizability = sigma * mvpMapPoints.size() / nmatches / nmatches / ORBmatcher::TH_HIGH;
     return localizability;
 }
 //end

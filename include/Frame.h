@@ -37,9 +37,6 @@ namespace ORB_SLAM2
 #define FRAME_GRID_ROWS 48
 #define FRAME_GRID_COLS 64
 
-const int TH_HIGH = 100;
-const int TH_LOW = 50;
-
 class MapPoint;
 class KeyFrame;
 
@@ -101,9 +98,11 @@ public:
     // Backprojects a keypoint (if stereo/depth info available) into 3D world coordinates.
     cv::Mat UnprojectStereo(const int &i);
 
-    //20180929 add by song
+    //20181107 song
+    //Update the status of the map point
     void updateStatus();
-    float computeLocalizability();
+    //Compute the matching rate
+    float computeMatchingRate();
     //end
 
 public:

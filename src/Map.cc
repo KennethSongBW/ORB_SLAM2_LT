@@ -27,8 +27,6 @@ namespace ORB_SLAM2
 
 Map::Map():mnMaxKFid(0),mnBigChangeIdx(0)
 {
-    count = 0;
-    lastTime = 0.0;
 }
 
 void Map::AddKeyFrame(KeyFrame *pKF)
@@ -132,76 +130,54 @@ void Map::clear()
     mvpKeyFrameOrigins.clear();
 }
 
-//20181006 add by song
-void Map::mapUpdate()
-{
-    // if (para_P.size() != p+1 || para_Q.size() != q+1) return;
-    for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
-    {
-        int m = (*sit)->getMemStatus();
-        if (m == 2) EraseMapPoint((*sit));
-        //toadd: check the lasttime of the mappoint
-        if (m == 1)
-        {
-            vector<bool> history = (*sit)->getVisible();
-            int count = history.size();
-            std::vector<float> para_P = (*sit)->getPara_P();
-            std::vector<float> para_Q = (*sit)->getPara_Q();
-            int p = (*sit)->getP();
-            int q = (*sit)->getQ();
-            float current = para_P[p] + para_Q[q];
-            for (int i = 0; i < p; i++) current+= int(history[count-i-1]) * para_P[i];
-            for (int i = 0; i < q; i++) current+= int(history[count-i-1]) * para_Q[i];
-            if (current >= 0.5) 
-            {
-                (*sit)->setPrediction(true); 
-                AddMapPoint(*sit);
-            }
-            else 
-            {
-                (*sit)->setPrediction(false);
-                EraseMapPoint(*sit);
-            }
-        }
-    }
-}
-
-void Map::regularUpdate(double t)
+void Map::MapStatusUpdate(double t)
 {
     if (lastTime == 0)
     {
-        if (count != 0) {cout << "Error" << endl; return;}
+        cout << "MapStatus First Update!" << endl;
+        if (countOfUpdate != 0) {cout << "Error!" << endl; return;}
         for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
         {
             if (!(*sit)) break;
-            vector<bool> status = (*sit)->getVisible();
-            if (status.size() != 0) {cout << "Error" << endl; return;}
             (*sit)->addVisible(1);
             lastTime = t;
-            count += 1;
+            countOfUpdate += 1;
         }
     }
     else
     {
-        if (t - lastTime <= 1.0) return;
-        cout << "Update!" << endl;
-        for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
+        if (t - lastTime >= timeInterval && t - lastTime <= 2 * timeInterval)
         {
-            if (!(*sit)) break;
-            if ((*sit)->getVisible().empty())
+            cout << "MapStatus Update!" << endl;
+            for (set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
             {
-                for (int i = 0; i < count; i++) (*sit)->addVisible(false);
-                (*sit)->addVisible(true);
-                //cout << "add new" << endl;
+                if (!(*sit)) break;
+                if ((*sit)->getVisible().empty())
+                {
+                    for (int i = 0; i < countOfUpdate ; i++) (*sit)->addVisible(false);
+                    (*sit)->addVisible(true);
+                    //cout << "add new" << endl;
+                }
+                else if (t - (*sit)->getCount() >= timeInterval) (*sit)->addVisible(0);
+                else (*sit)->addVisible(true);
+                countOfUpdate += 1;
+                lastTime = t;
             }
-            else if (t - (*sit)->getLastTime() >= 1.0) (*sit)->addVisible(false);
-            else (*sit)->addVisible(true);
-            count += 1;
-            lastTime = t;
+        }
+        else if (t - lastTime >= 2 * timeInterval) {cout << "Error in MapStatusUpdate" << endl; return;}
+        else
+        {
+            for (set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
+            {
+                if (!(*sit)) break;
+                if (t - (*sit)->getCount() <= timeInterval && (*sit)->getVisible()[(*sit)->getVisible().size()-1] == false)
+                {
+                    (*sit)->getVisible()[(*sit)->getVisible().size()-1] = 1;
+                }
+            }
         }
     }
 }
-//end
 
 template<class Archive>
 void Map::serialize(Archive &ar, const unsigned int version)

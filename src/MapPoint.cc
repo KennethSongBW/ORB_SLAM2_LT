@@ -41,11 +41,12 @@ MapPoint::MapPoint(const cv::Mat &Pos, KeyFrame *pRefKF, Map* pMap):
     // MapPoints can be created from Tracking and Local Mapping. This mutex avoid conflicts with id.
     unique_lock<mutex> lock(mpMap->mMutexPointCreation);
     mnId=nNextId++;
-    //20181002 add by song
-    memStatus = LONGTERM;
+
+    //20181107 song
+    status = LONGTERM;
     lastTime = pRefKF->mTimeStamp;
-    isChanged = false;
     isVisible.clear();
+    p = 0;
     //end
 }
 
@@ -74,11 +75,12 @@ MapPoint::MapPoint(const cv::Mat &Pos, Map* pMap, Frame* pFrame, const int &idxF
     // MapPoints can be created from Tracking and Local Mapping. This mutex avoid conflicts with id.
     unique_lock<mutex> lock(mpMap->mMutexPointCreation);
     mnId=nNextId++;
-    //20181002 add by song
-    memStatus = LONGTERM;
+
+    //20181107 song
+    status = LONGTERM;
     lastTime = pFrame->mTimeStamp;
-    isChanged = false;
     isVisible.clear();
+    p = 0;
     //end
 }
 
@@ -113,35 +115,12 @@ void MapPoint::AddObservation(KeyFrame* pKF, size_t idx)
     if(mObservations.count(pKF))
         return;
     mObservations[pKF]=idx;
+    lastTime = pKF->mTimeStamp;
 
     if(pKF->mvuRight[idx]>=0)
         nObs+=2;
     else
         nObs++;
-    
-
-    //20181002 add by song
-    // if (!isChanged)
-    // {
-    //     isChanged = true;
-    //     double t = mpMap->getStartTime();
-    //     for (int i = 0; i < pKF->mTimeStamp - t; i++) isVisible.push_back(false);
-    //     isVisible.push_back(true);
-    //     lastTime = pKF->mTimeStamp;
-    // }
-    // else if (pKF->mTimeStamp - lastTime >= 1.0 && pKF->mTimeStamp - lastTime < 2.0) 
-    // {
-    //     isVisible.push_back(true);
-    //     lastTime = pKF->mTimeStamp;
-    // }
-    // else if (pKF->mTimeStamp - lastTime > 2.0)
-    // {
-    //     for (int i = 0; i < pKF->mTimeStamp - lastTime -1; i++) isVisible.push_back(false);
-    //     isVisible.push_back(true);
-    //     lastTime = pKF->mTimeStamp;
-    // }
-    lastTime = pKF->mTimeStamp;
-    //end
 }
 
 void MapPoint::EraseObservation(KeyFrame* pKF)
@@ -452,46 +431,22 @@ int MapPoint::PredictScale(const float &currentDist, Frame* pF)
     return nScale;
 }
 
-//201809929 add by song
-void MapPoint::addCount()
-{
-    if (memStatus == SHORTTERM)
-    {
-        if (countOfShort >= 8 || countOfShort < 0)
-        {
-            setMemStaus(2);
-        }
-        else if (memStatus == 7)
-        {
-            resetCount();
-            setMemStaus(0);
-        }
-        else countOfShort++;
-    }
-}
-
-void MapPoint::minusCount()
-{
-    if (memStatus == LONGTERM)
-    {
-        setMemStaus(1);
-        countDown();
-    }
-    else if (memStatus == SHORTTERM && countOfShort!= 0) resetCount();
-    else setMemStaus(2);
-}
-
+//20181107 song
 bool MapPoint::isSame(MapPoint* pMP)
 {
-    if (!GetWorldPos().empty() && !pMP->GetWorldPos().empty())
+    if (GetWorldPos().empty() || pMP->GetWorldPos().empty()) return false;
+    for (int i = 0; i < 3; i++)
     {
-        for (int i = 0; i < 3; i++)
-        {
-            if (GetWorldPos().at<float>(i,0) != pMP->GetWorldPos().at<float>(i,0)) return false;
-        }
-        return true;
+        if (GetWorldPos().at<float>(i,0) != pMP->GetWorldPos().at<float>(i,0)) return false;
     }
-    else return false;
+    return true;
+}
+
+void MapPoint::setPara(std::vector<float> para)
+{
+    if (para.size() == 0) {cout << "Error in reading in parameters\n"; return;}
+    para_P = para;
+    p = para_P.size();
 }
 //end
 

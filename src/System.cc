@@ -36,27 +36,24 @@ namespace ORB_SLAM2
 {
 
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
-               const bool bUseViewer, bool is_save_map_, double time):mSensor(sensor), is_save_map(is_save_map_), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),
-        mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false), startTime(time)
+               const bool bUseViewer, bool is_save_map_):mSensor(sensor), is_save_map(is_save_map_), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),
+        mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false)
 {
     // Output welcome message
-    // cout << endl <<
-    // "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << endl <<
-    // "This program comes with ABSOLUTELY NO WARRANTY;" << endl  <<
-    // "This is free software, and you are welcome to redistribute it" << endl <<
-    // "under certain conditions. See LICENSE.txt." << endl << endl;
+    cout << endl <<
+    "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << endl <<
+    "This program comes with ABSOLUTELY NO WARRANTY;" << endl  <<
+    "This is free software, and you are welcome to redistribute it" << endl <<
+    "under certain conditions. See LICENSE.txt." << endl << endl;
 
-    // cout << "Input sensor was set to: ";
+    cout << "Input sensor was set to: ";
 
-    // if(mSensor==MONOCULAR)
-    //     cout << "Monocular" << endl;
-    // else if(mSensor==STEREO)
-    //     cout << "Stereo" << endl;
-    // else if(mSensor==RGBD)
-    //     cout << "RGB-D" << endl;
-    cout << "Based on ORB_SLAM2" << endl;
-    cout << "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << endl;
-    cout << "Modified by SJTU" << endl;
+    if(mSensor==MONOCULAR)
+        cout << "Monocular" << endl;
+    else if(mSensor==STEREO)
+        cout << "Stereo" << endl;
+    else if(mSensor==RGBD)
+        cout << "RGB-D" << endl;
 
     //Check settings file
     cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
@@ -74,7 +71,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     }
 
     //Load ORB Vocabulary
-    // cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
+    cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
     mpVocabulary = new ORBVocabulary();
     bool bVocLoad = false; // chose loading method based on file extension
@@ -90,20 +87,19 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cerr << "Falied to open at: " << strVocFile << endl;
         exit(-1);
     }
-    // cout << "Vocabulary loaded!" << endl << endl;
+    cout << "Vocabulary loaded!" << endl << endl;
+
 
     //Create KeyFrame Database
     //Create the Map
     if (!mapfile.empty() && LoadMap(mapfile))
     {
         bReuseMap = true;
-        readInPara("para.txt");
     }
     else
     {
         mpKeyFrameDatabase = new KeyFrameDatabase(mpVocabulary);
         mpMap = new Map();
-        //mpMap->setStartTime(startTime);
     }
 
     //Create Drawers. These are used by the Viewer
@@ -113,7 +109,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     //Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
-                             mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor, bReuseMap, true);
+                             mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor, bReuseMap);
 
     //Initialize the Local Mapping thread and launch
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
@@ -329,7 +325,6 @@ void System::Reset()
 
 void System::Shutdown()
 {
-    finishTime = mpTracker->mCurrentFrame.mTimeStamp;
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
     if(mpViewer)
@@ -566,36 +561,11 @@ bool System::LoadMap(const string &filename)
     return true;
 }
 
-//20180929 add by song
-void System::saveMap(const string &filename)
-{
-    //unique_lock<mutex> lock(mMutexState);
-    //cout << "SaveMap" << endl;
-
-    std::vector<MapPoint*> allMapPoints = mpMap->GetAllMapPoints();
-
-    ofstream f;
-    f.open(filename.c_str());
-    f << fixed;
-    
-    for (size_t i=0; i < allMapPoints.size(); i++)
-    {
-        MapPoint* point = allMapPoints[i];
-        cv::Mat pos = point->GetWorldPos();
-        //if (point->getMemStatus() == 0)
-        //{
-        // f << setprecision(6) << pos.at<float>(0,0) << " " << pos.at<float>(1,0) << " " << pos.at<float>(2,0) << " " 
-        //     << point->getMemStatus() << endl;
-        f << setprecision(6) << pos.at<float>(0,0) << " " << pos.at<float>(1,0) << " " << pos.at<float>(2,0) << endl;
-        //}
-    }
-    f.close();
-    //cout << "Map Saved" << endl;
-}
-
+//20181107 song
 void System::saveMapPointStatus(const string &filename)
 {
-    //cout << "SaveMap" << endl;
+    double finishTime = mpTracker->mCurrentFrame.mTimeStamp;
+    cout << "Save Map Points Status" << endl;
     std::vector<MapPoint*> allMapPoints = mpMap->GetAllMapPoints();
     ofstream f;
     f.open(filename.c_str());
@@ -612,54 +582,48 @@ void System::saveMapPointStatus(const string &filename)
                 if (point->getVisible()[j]) f << 1 << " ";
                 else f << 0 << " ";
             }
-            for (int j = 0; j < finishTime - point->getLastTime() -1; j++) f << 0 << " ";
+            for (int j = 0; j < finishTime - point->getLastTime() - 1; j++) f << 0 << " ";
             f << endl;
         }
     }
     f.close();
 }
 
-void System::readInPara(const string &filename)
+void System::loadPara(const string &filename)
 {
-    std::ifstream in(filename, std::ios_base::binary);
-    if (!in)
+    cout << "Load parameters" << endl;
+    std::ifstream fin;
+    fin.open(filename);
+    if (!fin)
     {
-        cerr << "Cannot Open Parafile: " << mapfile << " , You need create it first!" << std::endl;
-        return ;
+        cout << "Can not open parameter file\n";
+        return;
     }
-    string s;
-    while(getline(in, s))
+    float value;
+    vector<float> para;
+    int n;
+    bool count = 0;
+    std::vector<MapPoint*> points = mpMap->GetAllMapPoints();
+    while (fin >> value)
     {
-        istringstream iss(s);
-        unsigned long num;
-        int sp, sq;
-        iss >> num >> sp >> sq;
-        std::vector<float> ap;
-        std::vector<float> aq;
-        for (int i = 0; i < sp + 1; i++) 
+        if (value != 99999)
         {
-            float a ;
-            iss >> a;
-            ap.push_back(a);
+            if (count == 0) {n = int(value); count = 1;}
+            else para.push_back(value);
         }
-        for (int i = 0; i < sq + 1; i++) 
+        else
         {
-            float a ;
-            iss >> a;
-            aq.push_back(a);
-        }
-        std::vector<MapPoint*> map = mpMap->GetAllMapPoints();
-        for (int i = 0; i < map.size(); i++)
-        {
-            if (map[i]->mnId = num) 
+            for (int i = 0; i < points.size(); i++)
             {
-                map[i]->setP(sp);
-                map[i]->setQ(sq);
-                map[i]->setPara_P(ap);
-                map[i]->setPara_Q(aq);
+                if (points[i]->mnId == n) points[i]->setPara(para);
             }
+            n = 0;
+            count = 0;
+            para.clear();
         }
     }
+    if (fin.eof()) cout << "Load Finished" << endl;
+    fin.close();
 }
 //end
 

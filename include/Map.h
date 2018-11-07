@@ -23,7 +23,6 @@
 
 #include "MapPoint.h"
 #include "KeyFrame.h"
-
 #include <set>
 
 #include <mutex>
@@ -39,6 +38,9 @@ class KeyFrame;
 
 class Map
 {
+    //20181107 song
+    const double timeInterval = 1.0;
+    //end
 public:
     Map();
 
@@ -68,20 +70,21 @@ public:
     // This avoid that two points are created simultaneously in separate threads (id conflict)
     std::mutex mMutexPointCreation;
 
-    //20181006 add by song
-    void mapUpdate();
-    //void setStartTime(double time) {startTime = time;}
-    //double getStartTime() {return startTime;}
-    //void setCurrentTime(double t) {currentTime = t;}
-    void regularUpdate(double t);
+    //20181107 song
+    //update the status of the map points time series
+    void MapStatusUpdate(double t);
     //end
-
 
 private:
     // serialize is recommended to be private
     friend class boost::serialization::access;
     template<class Archive>
     void serialize(Archive &ar, const unsigned int version);
+
+    //20181107 song
+    double lastTime;
+    long countOfUpdate;
+    //end
 
 protected:
     std::set<MapPoint*> mspMapPoints;
@@ -95,13 +98,6 @@ protected:
     int mnBigChangeIdx;
 
     std::mutex mMutexMap;
-
-    //20181008 add by song
-    //double startTime;
-    //double currentTime;
-    double lastTime;
-    unsigned long count;
-    //end
 };
 
 } //namespace ORB_SLAM

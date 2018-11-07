@@ -39,11 +39,9 @@ class Frame;
 
 class MapPoint
 {
-    //20180929 add by song
-    //create a type to save the status of the mappoint
+    //20181107 song
     enum memType {LONGTERM = 0, SHORTTERM = 1, REMOVED = 2};
     //end
-
 public:
     MapPoint(const cv::Mat &Pos, KeyFrame* pRefKF, Map* pMap);
     MapPoint(const cv::Mat &Pos,  Map* pMap, Frame* pFrame, const int &idxF);
@@ -87,70 +85,86 @@ public:
     int PredictScale(const float &currentDist, KeyFrame*pKF);
     int PredictScale(const float &currentDist, Frame* pF);
 
-    //20180929 add by song
-    //get the memory status of this map point
+    //20181107 song
+    //Set the status of the map point
+    void setMemStatus(int i)
+    {
+        if (i == 0) status = LONGTERM;
+        else if (i == 1) status = SHORTTERM;
+        else status = REMOVED;
+    }
+
+    //Get the status of the map point
     int getMemStatus()
     {
-        if (memStatus == LONGTERM) return 0;
-        else if (memStatus == SHORTTERM) return 1;
+        if (status == LONGTERM) return 0;
+        else if (status == SHORTTERM) return 1;
         else return 2;
     }
 
-    //set the memory status of this map point
-    void setMemStaus(int i)
+    //reset the countMem to 0
+    void resetCount() {countMem = 0;}
+
+    //start the countdown of countMem
+    void countDown()
     {
-        if (i == 0) memStatus = LONGTERM;
-        else if (i == 1) memStatus = SHORTTERM;
-        else memStatus = REMOVED;
+        countMem = 7;
+        setMemStatus(1);
     }
 
-    //get the count of short memory
-    uint getCount() {return countOfShort;}
+    //get the countMem
+    uint getCount() {return countMem;}
 
-    //adding one to count of short
-    void addCount();
+    //add 1 to the countMem and decide whether it will upgrade to long term
+    void addCount()
+    {
+        if (status == SHORTTERM)
+        {
+            if (countMem >= 8 || countMem < 0) setMemStatus(2);
+            else if (countMem ==7)
+            {
+                resetCount();
+                setMemStatus(0);
+            }
+            else
+            {
+                countMem += 1;
+                setMemStatus(1);
+            }
+        }
+    }
 
-    //reset the count of short
-    void resetCount() {countOfShort = 0;}
+    //minus from the countMem and decide whether the status will change
+    void minusCount()
+    {
+        if (status == LONGTERM) countDown();
+        else if (status == SHORTTERM && countMem!= 0) resetCount();
+        else setMemStatus(2); 
+    }
 
-    //countdown the count of short
-    void countDown() {countOfShort = 7;}
-
-    //minus one from count of short
-    void minusCount();
-
-    //determine whether two map points are the same
+    //decide whether two map points are the same
     bool isSame(MapPoint* pMP);
 
-    //add a visible record of this point
+    //add visible to isVisible
     void addVisible(bool s) {isVisible.push_back(s);}
+
+    //predict current status
+    void predictStatus()
+    {
+        double currentStatus = para_P[0];
+        for(int i = 0; i < p - 1; i++) currentStatus += para_P[i] * isVisible[isVisible.size()-1-i];
+        if (currentStatus >= 0.5) prediction = true;
+        else prediction = false;
+    }
 
     //get isVisible
     vector<bool> getVisible() {return isVisible;}
 
-    bool getPrediction() {return predictStatus;}
-    void setPrediction(bool status) {predictStatus = status;}
+    //get lastTime
     double getLastTime() {return lastTime;}
 
-    int getP() {return p;}
-    int getQ() {return q;}
-    std::vector<float> getPara_P() {return para_P;}
-    std::vector<float> getPara_Q() {return para_Q;}
-
-    void setP(int a) {p = a;}
-    void setQ(int a) {q = a;}
-    bool setPara_P(std::vector<float> a)
-    {
-        if (a.size() == p+1) para_P = a;
-        else return false;
-        return true;
-    }
-    bool setPara_Q(std::vector<float> a)
-    {
-        if (a.size() == q+1) para_Q = a;
-        else return false;
-        return true;
-    }
+    //set parameters
+    void setPara(std::vector<float> para);
     //end
 
 public:
@@ -227,22 +241,25 @@ protected:
      std::mutex mMutexPos;
      std::mutex mMutexFeatures;
 
-     //20180929 add by song
-     //Saving the memory status of the map point
-     memType memStatus;
-     //Saving the count of short memory
-     uint countOfShort;
+     //20181107 song
+     //The status of this map point
+     memType status;
 
-     vector<bool> isVisible;
-     double lastTime;
-     bool predictStatus;
-     bool isChanged;
+     //The counting of this map point
+     uint countMem;
 
-     int p,q;
+     //Vector for saving visible times
+     std::vector<bool> isVisible;
+
+     //arma parameters
+     int p;
      std::vector<float> para_P;
-     std::vector<float> para_Q;
-     std::vector<float> noise;
-     //end
+
+     //predict status
+     bool prediction;
+
+     //last time when this map point is visible
+     double lastTime;
 };
 
 } //namespace ORB_SLAM
