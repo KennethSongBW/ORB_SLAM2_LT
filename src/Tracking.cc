@@ -487,7 +487,9 @@ void Tracking::Track()
 
         //20181107 song
         mCurrentFrame.updateStatus();
+        //cout << 1 << endl;
         mpMap->MapStatusUpdate(mCurrentFrame.mTimeStamp);
+        //cout << 2 << endl;
         //end
     }
 
