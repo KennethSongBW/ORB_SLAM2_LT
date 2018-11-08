@@ -132,15 +132,16 @@ void Map::clear()
     mvpKeyFrameOrigins.clear();
 }
 
+//20181107 song
 void Map::MapStatusUpdate(double t)
 {
     if (lastTime == 0)
     {
-        cout << "MapStatus First Update!" << endl;
+        //cout << "MapStatus First Update!" << endl;
         if (countOfUpdate != 0) {cout << "Error!" << endl; return;}
         for(set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
         {
-            if (!(*sit)) break;
+            if (!(*sit)) continue;
             (*sit)->addVisible(1);
             lastTime = t;
             countOfUpdate += 1;
@@ -152,10 +153,10 @@ void Map::MapStatusUpdate(double t)
         //cout << "Not first time" << endl;
         if (t - lastTime >= timeInterval && t - lastTime <= 2 * timeInterval)
         {
-            cout << "MapStatus Update!" << endl;
+            //cout << "MapStatus Update!" << endl;
             for (set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
             {
-                if (!(*sit)) break;
+                if (!(*sit)) continue;
                 // if ((*sit)->getVisible().empty())
                 // {
                 //     for (int i = 0; i < countOfUpdate ; i++) (*sit)->addVisible(false);
@@ -168,7 +169,7 @@ void Map::MapStatusUpdate(double t)
                 countOfUpdate += 1;
                 lastTime = t;
             }
-            cout << "MapStatus Update End!" << endl;
+            //cout << "MapStatus Update End!" << endl;
         }
         else if (t - lastTime >= 2 * timeInterval) {cout << "Error in MapStatusUpdate" << endl; return;}
         else
@@ -176,8 +177,8 @@ void Map::MapStatusUpdate(double t)
             //cout << "Status Modify" << endl;
             for (set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
             {
-                if (!(*sit)) break;
-                if ((*sit)->getVisible().empty()) break;
+                if (!(*sit)) continue;
+                if ((*sit)->getVisible().empty()) continue;
                 int n = (*sit)->getVisible().size();
                 if (t - (*sit)->getLastTime() <= timeInterval && (*sit)->getVisible()[n-1] == false)
                 {
@@ -187,6 +188,25 @@ void Map::MapStatusUpdate(double t)
         }
     }
 }
+
+void Map::MapUpdate()
+{
+    long countAll = 0;
+    long count = 0;
+    float a[] = {1.1, 2.2, 3.3};
+    std::vector<float> para(a,a + sizeof(a) / sizeof(float));
+    for (set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
+    {
+        //bool visible = (*sit)->predictStatus();
+        if (!(*sit)) continue;
+        countAll++;
+        (*sit)->setPara(para);    
+        if (!(*sit)->predictStatus() || (*sit)->getMemStatus() == 2) count++;
+        // if ((*sit)->getMemStatus() == 2) count++;
+    }
+    cout << double(count) / countAll << endl;
+}
+//end
 
 template<class Archive>
 void Map::serialize(Archive &ar, const unsigned int version)

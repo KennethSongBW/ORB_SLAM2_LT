@@ -584,7 +584,7 @@ void System::saveMapPointStatus(const string &filename)
                 else f << 0 << " ";
             }
             for (int j = 0; j < finishTime - point->getLastTime() - 1; j++) f << 0 << " ";
-            f << endl;
+            f << 99999 << endl;
         }
     }
     f.close();

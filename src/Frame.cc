@@ -686,11 +686,11 @@ void Frame::updateStatus()
     if (mvpMapPoints.size() == 0 || reference.size() == 0) return;
     for (int i = 0; i < mvpMapPoints.size(); i++)
     {
-        if (!mvpMapPoints[i]) break;
+        if (!mvpMapPoints[i]) continue;
         bool flag = false;
         for (int j = 0;j < reference.size(); j++)
         {
-            if (!reference[j]) break;
+            if (!reference[j]) continue;
             if (mvpMapPoints[i]->isSame(reference[j])) {mvpMapPoints[i]->addCount(); flag = true; break;}
         }
         if (!flag) {mvpMapPoints[i]->minusCount();}
@@ -704,8 +704,11 @@ float Frame::computeMatchingRate()
     float th = 3.0;
     const bool bFactor = th!=1.0;
     ORBmatcher match;
+    if (mvpMapPoints.empty()) return 0;
     for(size_t iMP=0; iMP<mvpMapPoints.size(); iMP++)
     {
+        // cout << 1 << endl;
+        if (!mvpMapPoints[iMP]) continue;
         MapPoint* pMP = mvpMapPoints[iMP];
         if(!pMP->mbTrackInView)
             continue;
@@ -713,6 +716,7 @@ float Frame::computeMatchingRate()
         if(pMP->isBad())
             continue;
 
+        // cout << 2 << endl;
         const int &nPredictedLevel = pMP->mnTrackScaleLevel;
         float r = match.RadiusByViewingCos(pMP->mTrackViewCos);
 
@@ -720,7 +724,7 @@ float Frame::computeMatchingRate()
 
         const vector<size_t> vIndices =
                 GetFeaturesInArea(pMP->mTrackProjX,pMP->mTrackProjY,r*mvScaleFactors[nPredictedLevel],nPredictedLevel-1,nPredictedLevel);
-        
+        // cout << 3 << endl;
         if(vIndices.empty()) continue;
 
         const cv::Mat MPdescriptor = pMP->GetDescriptor();
@@ -730,7 +734,7 @@ float Frame::computeMatchingRate()
         int bestDist2=256;
         int bestLevel2 = -1;
         int bestIdx =-1 ;
-
+        // cout << 4 << endl;
         for(vector<size_t>::const_iterator vit=vIndices.begin(), vend=vIndices.end(); vit!=vend; vit++)
         {
             const size_t idx = *vit;
@@ -764,7 +768,7 @@ float Frame::computeMatchingRate()
                 bestDist2=dist;
             }
         }
-
+        // cout << 5 << endl;
         if(bestDist<=ORBmatcher::TH_HIGH)
         {
             if(bestLevel==bestLevel2 && bestDist>0.6*bestDist2)
@@ -775,6 +779,7 @@ float Frame::computeMatchingRate()
             sigma+= bestDist;
         }
     }
+    // cout << 6 << endl;
     float localizability = sigma * mvpMapPoints.size() / nmatches / nmatches / ORBmatcher::TH_HIGH;
     return localizability;
 }

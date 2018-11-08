@@ -73,6 +73,8 @@ public:
     //20181107 song
     //update the status of the map points time series
     void MapStatusUpdate(double t);
+    //Update the map
+    void MapUpdate();
     //end
 
 private:

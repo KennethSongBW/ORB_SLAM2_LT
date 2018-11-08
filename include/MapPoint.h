@@ -149,12 +149,15 @@ public:
     void addVisible(bool s) {isVisible.push_back(s);}
 
     //predict current status
-    void predictStatus()
+    bool predictStatus()
     {
+        if (isVisible.size() < p) return false;
         double currentStatus = para_P[0];
         for(int i = 0; i < p - 1; i++) currentStatus += para_P[i] * isVisible[isVisible.size()-1-i];
         if (currentStatus >= 0.5) prediction = true;
         else prediction = false;
+        //cout << "Predict Finished!" << endl;
+        return prediction;
     }
 
     //get isVisible

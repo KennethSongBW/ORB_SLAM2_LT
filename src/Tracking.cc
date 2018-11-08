@@ -486,10 +486,14 @@ void Tracking::Track()
         mLastFrame = Frame(mCurrentFrame);
 
         //20181107 song
+        //Saving the status of the map points
         mCurrentFrame.updateStatus();
-        //cout << 1 << endl;
+        //Saving the time series of the map points
         mpMap->MapStatusUpdate(mCurrentFrame.mTimeStamp);
-        //cout << 2 << endl;
+        //Update current Map;
+        mpMap->MapUpdate();
+        //print matching rate
+        // cout << mCurrentFrame.computeMatchingRate() << endl;
         //end
     }
 
