@@ -212,6 +212,10 @@ public:
 
     static std::mutex mGlobalMutex;
 
+    //20181109 song
+    bool visibleStatus;
+    //end
+
 protected:    
 
      // Position in absolute coordinates

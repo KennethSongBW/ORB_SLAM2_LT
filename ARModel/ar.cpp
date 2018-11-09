@@ -3,12 +3,14 @@
 #include <cmath>
 using namespace std;
 
-bool autoRegression(vector<int>, int, vector<double>&);
+bool autoRegression(vector<int>, int, vector<double>&, double& sigma);
 bool ARLeastSquare(vector<double>, int, vector<double> &);
 bool solveLE(vector<vector<double> >, vector<double>, int);
 
-bool autoRegression(vector<int> input, int degree, vector<double>& output)
+bool autoRegression(vector<int> input, int degree, vector<double>& output, double& sigma)
 {
+    // cout << 10 << endl;
+    sigma = 0;
     // cout << 1 << endl;
     double mean = 0.0;
     vector<double> minus;
@@ -25,6 +27,16 @@ bool autoRegression(vector<int> input, int degree, vector<double>& output)
         // cout << "Unable to predict!" << endl;
         return false;
     }
+    // cout << 11 << endl;
+    for (int i = degree; i < input.size(); i++)
+    {
+        double delta = input[i];
+        for (int j = 0; j < degree; j++) delta -= output[j] * input[i-j];
+        sigma += delta * delta;
+    }
+    // cout << 12 << endl;
+    sigma /= input.size() - degree;
+    // cout << 13 << endl;
     // cout << output.size()<< " " << "!" << endl;
     // for (int i = 0; i < degree; i++) output.push_back(-ar[degree][i]);
     return true;

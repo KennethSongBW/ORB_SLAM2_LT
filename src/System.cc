@@ -578,11 +578,11 @@ void System::saveMapPointStatus(const string &filename)
         if (point)
         {
             f << setprecision(6) << point->mnId << " ";
-            for (int j = 0; j < point->getVisible().size(); j++)
-            {
-                if (point->getVisible()[j]) f << 1 << " ";
-                else f << 0 << " ";
-            }
+            // for (int j = 0; j < point->getVisible().size(); j++)
+            // {
+            //     if (point->getVisible()[j]) f << 1 << " ";
+            //     else f << 0 << " ";
+            // }
             for (int j = 0; j < finishTime - point->getLastTime() - 1; j++) f << 0 << " ";
             f << 99999 << endl;
         }

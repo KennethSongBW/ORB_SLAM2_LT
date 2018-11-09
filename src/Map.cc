@@ -164,7 +164,7 @@ void Map::MapStatusUpdate(double t)
                 //     //cout << "add new" << endl;
                 // }
                 // else if (t - (*sit)->getCount() >= timeInterval) (*sit)->addVisible(0);
-                if (t - (*sit)->getCount() >= timeInterval) (*sit)->addVisible(0);
+                if (t - (*sit)->getLastTime() >= timeInterval) (*sit)->addVisible(0);
                 else (*sit)->addVisible(true);
                 countOfUpdate += 1;
                 lastTime = t;
@@ -172,20 +172,20 @@ void Map::MapStatusUpdate(double t)
             //cout << "MapStatus Update End!" << endl;
         }
         else if (t - lastTime >= 2 * timeInterval) {cout << "Error in MapStatusUpdate" << endl; return;}
-        else
-        {
-            //cout << "Status Modify" << endl;
-            for (set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
-            {
-                if (!(*sit)) continue;
-                if ((*sit)->getVisible().empty()) continue;
-                int n = (*sit)->getVisible().size();
-                if (t - (*sit)->getLastTime() <= timeInterval && (*sit)->getVisible()[n-1] == false)
-                {
-                    (*sit)->getVisible()[n-1] = 1;
-                }
-            }
-        }
+        // else
+        // {
+        //     //cout << "Status Modify" << endl;
+        //     for (set<MapPoint*>::iterator sit=mspMapPoints.begin(), send=mspMapPoints.end(); sit!=send; sit++)
+        //     {
+        //         if (!(*sit)) continue;
+        //         if ((*sit)->getVisible().empty()) continue;
+        //         int n = (*sit)->getVisible().size();
+        //         if (t - (*sit)->getLastTime() <= timeInterval && (*sit)->getVisible()[n-1] == false)
+        //         {
+        //             (*sit)->getVisible()[n-1] = 1;
+        //         }
+        //     }
+        // }
     }
 }
 
