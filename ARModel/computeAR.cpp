@@ -35,8 +35,7 @@ int main()
         }
         else
         {
-            // cout << para.size() << " " << result.size() << endl;
-            //Here to add degree computation
+            //Here to perform degree computation
             vector<double> s;
             vector<vector<double> > results;
             for (int i = MIN; i < MAX; i++)
@@ -47,28 +46,22 @@ int main()
                 if (!autoRegression(para, i, result, x))
                 {
                     cout << "Unable to predict!!" << endl;
-                    // count = 0;
-                    // para.clear();
-                    // result.clear();
-                    // number = 0;
+                    result.push_back(0);
+                    results.push_back(result);
+                    count = 0;
+                    para.clear();
+                    result.clear();
+                    number = 0;
                     continue;
                 }
                 s.push_back(x);
                 results.push_back(result);
-                // s[i] = log(s[i]) + 2 * i / double(para.size());
                 s.at(i-MIN) = log(s[i]) + 2 * i / double(para.size());
-                // cout << i << endl;
             }
             vector<double>::iterator small = min_element(s.begin(),s.end());
             int degree = distance(s.begin(), small);
             result = results[degree];
-            // double x;
-            // if (!autoRegression(para, 5, result, x))
-            // {
-            //     cout << 11111 << endl;
-            // }
             cout << result[0] << " " << degree << endl;
-            // cout << result[0] << endl;
             count = 0;
             para.clear();
             result.clear();

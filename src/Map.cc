@@ -204,7 +204,7 @@ void Map::MapUpdate()
         if (!(*sit)->predictStatus() || (*sit)->getMemStatus() == 2) count++;
         // if ((*sit)->getMemStatus() == 2) count++;
     }
-    cout << double(count) / countAll << endl;
+    //cout << double(count) / countAll << endl;
 }
 //end
 

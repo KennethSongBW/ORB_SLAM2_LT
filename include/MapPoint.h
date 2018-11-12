@@ -214,6 +214,9 @@ public:
 
     //20181109 song
     bool visibleStatus;
+
+    //The mnID of the map points in the same area
+    vector<long unsigned int> samePoints;
     //end
 
 protected:    

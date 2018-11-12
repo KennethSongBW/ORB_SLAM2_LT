@@ -48,6 +48,25 @@ MapPoint::MapPoint(const cv::Mat &Pos, KeyFrame *pRefKF, Map* pMap):
     isVisible.clear();
     p = 0;
     //end
+
+    //20181112 song
+    //add samPoints
+    samePoints.clear();
+    std::vector<MapPoint*> allMapPoints = mpMap->GetAllMapPoints();
+    if (allMapPoints.empty()) return;
+    for (size_t i = 0; i < allMapPoints.size(); i++)
+    {
+        if (!allMapPoints[i]) continue;
+        float dis = 0;
+        for (int j = 0; j < 3; j++) 
+            dis += std::pow(GetWorldPos().at<double>(j,0) - allMapPoints[i]->GetWorldPos().at<double>(j,0), 2);
+        if (dis < 0.05)
+        {
+            samePoints.push_back(allMapPoints[i]->mnId);
+            allMapPoints[i]->samePoints.push_back(mnId);
+        }
+    }
+    //end
 }
 
 MapPoint::MapPoint(const cv::Mat &Pos, Map* pMap, Frame* pFrame, const int &idxF):
@@ -81,6 +100,27 @@ MapPoint::MapPoint(const cv::Mat &Pos, Map* pMap, Frame* pFrame, const int &idxF
     lastTime = pFrame->mTimeStamp;
     isVisible.clear();
     p = 0;
+    //end
+
+    //20181112 song
+    //add samPoints
+    samePoints.clear();
+    std::vector<MapPoint*> allMapPoints = mpMap->GetAllMapPoints();
+    if (allMapPoints.empty()) return;
+    for (size_t i = 0; i < allMapPoints.size(); i++)
+    {
+        if (!allMapPoints[i]) continue;
+        float dis = 0;
+        for (int j = 0; j < 3; j++)
+        {
+            dis += std::pow(GetWorldPos().at<double>(i,0) - allMapPoints[i]->GetWorldPos().at<double>(i,0), 2);
+        }
+        if (dis < 0.0005)
+        {
+            samePoints.push_back(allMapPoints[i]->mnId);
+            allMapPoints[i]->samePoints.push_back(mnId);
+        }
+    }
     //end
 }
 
@@ -435,11 +475,10 @@ int MapPoint::PredictScale(const float &currentDist, Frame* pF)
 bool MapPoint::isSame(MapPoint* pMP)
 {
     if (GetWorldPos().empty() || pMP->GetWorldPos().empty()) return false;
-    for (int i = 0; i < 3; i++)
-    {
-        if (GetWorldPos().at<float>(i,0) != pMP->GetWorldPos().at<float>(i,0)) return false;
-    }
-    return true;
+    if (mnId == pMP->mnId) return true;
+    for (size_t i = 0; i < samePoints.size(); i++)
+        if (mnId == samePoints[i]) return true;
+    return false;
 }
 
 void MapPoint::setPara(std::vector<float> para)
